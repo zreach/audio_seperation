@@ -1,9 +1,10 @@
+#!usr/bin/env python3.9
 
 
-data=/Users/pingguosb/Desktop/python/AI/separation_data_preparation/result/audio
-stage=1  
+data=./audios
+stage=1
 # --
-
+expdir=./checkpoints
 ngpu=0
 dumpdir=data
 
@@ -17,7 +18,8 @@ num_layers=4
 bidirectional=1
 nspk=2
 # Training config
-epochs=30
+use_cuda=0
+epochs=5
 shuffle=0
 half_lr=0
 early_stop=0
@@ -46,7 +48,7 @@ tag="" # tag for managing experiments.
 if [ $stage -le 1 ]; then
   echo "Stage 1: Generating json files including wav path and duration"
   [ ! -d $dumpdir ] && mkdir $dumpdir
-  preprocess.py --in-dir $data --out-dir $dumpdir --sample-rate $sample_rate
+  python3.9 preprocess.py --in-dir $data --out-dir $dumpdir --sample-rate $sample_rate
 fi
 
 
@@ -60,6 +62,7 @@ if [ $stage -le 2 ]; then
   echo "Stage 2: Training"
   # ${cuda_cmd} --gpu ${ngpu} ${expdir}/train.log \
     python3.9  train.py \
+    --use_cuda $use_cuda \
     --train_dir $dumpdir/tr \
     --valid_dir $dumpdir/cv \
     --sample_rate $sample_rate \
@@ -92,11 +95,11 @@ fi
 
 if [ $stage -le 3 ]; then
   echo "Stage 3: Evaluate separation performance"
-  python3.9 evaluate.py \
+  python3.9 eval.py \
     --model_path ${expdir}/final.pth.tar \
     --data_dir $dumpdir/tt \
     --cal_sdr 1 \
-    --use_cuda 0 \
+    --use_cuda $use_cuda \
     --sample_rate $sample_rate \
     --batch_size 10
 fi
@@ -109,7 +112,7 @@ if [ $stage -le 4 ]; then
     --model_path ${expdir}/final.pth.tar \
     --mix_json $dumpdir/tt/mix.json \
     --out_dir ${separate_dir} \
-    --use_cuda 0 \
+    --use_cuda $use_cuda \
     --sample_rate $sample_rate \
     --batch_size 10
 fi

@@ -74,8 +74,7 @@ def _collate_fn(batch):
         sources_pad: B x C x K x L, torch.Tensor
     """
     # batch should be located in list
-    print(batch)
-    print('____')
+
     batch = load_mixtures_and_sources(batch)
     mixtures, sources = batch
 

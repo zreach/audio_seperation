@@ -8,7 +8,7 @@ import torch
 
 from data import AudioDataLoader, AudioDataset
 from criterion import cal_loss
-from myNet import TasNet
+from net import TasNet
 
 
 parser = argparse.ArgumentParser('Evaluate separation performance using TasNet')

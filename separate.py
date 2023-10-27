@@ -8,7 +8,7 @@ import torch
 import threading
 
 from data import EvalDataLoader, EvalDataset
-from mynet import TasNet
+from net import TasNet
 from concurrent.futures import ThreadPoolExecutor,as_completed,wait,ALL_COMPLETED
 
 parser = argparse.ArgumentParser('Separate speech using TasNet')
@@ -32,13 +32,15 @@ parser.add_argument('--sample_rate', default=8000, type=int,
 parser.add_argument('--process_num', default=4, type=int,
                     help='Num of Process')
 
-def inference(model,data,filenames):
+def inference(model,data):
     mixture,mix_lengths,filenames = data
     with torch.no_grad():
         estimate_source = model(mixture, mix_lengths)
         flat_estimate = remove_pad_and_flat(estimate_source, mix_lengths)
         mixture = remove_pad_and_flat(mixture, mix_lengths)
         # Write result
+        def write(inputs, filename, sr=args.sample_rate):
+                sf.write(filename, inputs, sr)
         for i, filename in enumerate(filenames):
             filename = os.path.join(args.out_dir,
                                     os.path.basename(filename).strip('.wav'))
@@ -46,8 +48,7 @@ def inference(model,data,filenames):
             C = flat_estimate[i].shape[0]
             for c in range(C):
                 write(flat_estimate[i][c], filename + '_s{}.wav'.format(c+1))
-        def write(inputs, filename, sr=args.sample_rate):
-                sf.write(filename, inputs, sr)# norm=True)
+        # norm=True)
 
 def separate(args):
     if args.mix_dir is None and args.mix_json is None:
@@ -70,7 +71,7 @@ def separate(args):
 
     threads = []
     for data in eval_loader:
-        thread = threading.Thread(target = inference,args=(data,))
+        thread = threading.Thread(target = inference,args=(model,data))
         thread.start()
         threads.append(thread)
         

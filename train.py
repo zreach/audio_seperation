@@ -1,10 +1,31 @@
+#!/usr/bin/env python
+
+# Created on 2018/12/14
+# Author: Kaituo XU
+
 import argparse
 
 import torch
-
+import random
 from data import AudioDataLoader, AudioDataset
 from solver import Solver
-from myNet import TasNet
+from net import TasNet
+import os
+import numpy as np
+os.environ['CUDA_VISIBLE_DEVICE']='2'
+
+def init_seed(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+ 
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    # Remove randomness (may be slower on Tesla GPUs) # https://pytorch.org/docs/stable/notes/randomness.html
+    if seed == 0:
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
 parser = argparse.ArgumentParser(
     "Time-domain Audio Separation Network (TasNet) with Permutation Invariant "
@@ -42,12 +63,12 @@ parser.add_argument('--max_norm', default=5, type=float,
 # minibatch
 parser.add_argument('--shuffle', default=0, type=int,
                     help='reshuffle the data at every epoch')
-parser.add_argument('--batch_size', '-b', default=128, type=int,
+parser.add_argument('--batch_size', '-b', default=32, type=int,
                     help='Batch size')
 parser.add_argument('--num_workers', default=4, type=int,
                     help='Number of workers to generate minibatch')
 # optimizer
-parser.add_argument('--optimizer', default='adam', type=str,
+parser.add_argument('--optimizer', default='sgd', type=str,
                     choices=['sgd', 'adam'],
                     help='Optimizer (support sgd and adam now)')
 parser.add_argument('--lr', default=1e-3, type=float,
@@ -74,19 +95,25 @@ parser.add_argument('--visdom_epoch', dest='visdom_epoch', type=int, default=0,
                     help='Turn on visdom graphing each epoch')
 parser.add_argument('--visdom_id', default='TasNet training',
                     help='Identifier for visdom run')
-
-
-def train(args):
+parser.add_argument('--percent', default=1,type=float,
+                    help='How many percent of data will be used')
+parser.add_argument('--use_cuda', default=False,type=bool,
+                    help='use cuda or not')
+def main(args):
     # Construct Solver
     # data
+    init_seed(42)
+    print(args.batch_size)
     tr_dataset = AudioDataset(args.train_dir, args.batch_size,
                               sample_rate=args.sample_rate, L=args.L)
     cv_dataset = AudioDataset(args.valid_dir, args.batch_size,
                               sample_rate=args.sample_rate, L=args.L)
-    tr_loader = AudioDataLoader(tr_dataset, batch_size=1,
+    sample_num = int(args.percent * len(tr_dataset))
+    print(sample_num)
+    tr_loader = AudioDataLoader(tr_dataset[:sample_num], batch_size=args.batch_size,
                                 shuffle=args.shuffle,
                                 num_workers=args.num_workers)
-    cv_loader = AudioDataLoader(cv_dataset, batch_size=1,
+    cv_loader = AudioDataLoader(cv_dataset[:sample_num], batch_size=args.batch_size,
                                 shuffle=args.shuffle,
                                 num_workers=0)
     data = {'tr_loader': tr_loader, 'cv_loader': cv_loader}
@@ -94,7 +121,8 @@ def train(args):
     model = TasNet(args.L, args.N, args.hidden_size, args.num_layers,
                    bidirectional=args.bidirectional, nspk=args.nspk)
     print(model)
-    # model.cuda()
+    if args.use_cuda:
+        model.cuda()
     # optimizer
     if args.optimizer == 'sgd':
         optimizier = torch.optim.SGD(model.parameters(),
@@ -108,7 +136,7 @@ def train(args):
     else:
         print("Not support optimizer")
         return
-
+        
     # solver
     solver = Solver(data, model, optimizier, args)
     solver.train()
@@ -117,4 +145,4 @@ def train(args):
 if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
-    train(args)
+    main(args)

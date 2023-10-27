@@ -39,7 +39,7 @@ def cal_si_snr_with_pit(source, estimate_source, source_lengths):
     mask = get_mask(source, source_lengths)
     zero_mean_target *= mask
     zero_mean_estimate *= mask
-    
+
     # Step 2. SI-SNR with PIT
     # flat K, L to T (T = K * L)
     flat_target = zero_mean_target.view(B, C, -1)  # [B, C, T]
@@ -49,6 +49,7 @@ def cal_si_snr_with_pit(source, estimate_source, source_lengths):
     s_estimate = torch.unsqueeze(flat_estimate, dim=2)  # [B, C, 1, T]
     # s_target = <s', s>s / ||s||^2
     pair_wise_dot = torch.sum(s_estimate * s_target, dim=3, keepdim=True)  # [B, C, C, 1]
+    #这部分相当于两两相乘
     s_target_energy = torch.sum(s_target ** 2, dim=3, keepdim=True) + EPS  # [B, 1, C, 1]
     pair_wise_proj = pair_wise_dot * s_target / s_target_energy  # [B, C, C, T]
     # e_noise = s' - s_target
@@ -82,8 +83,6 @@ def reorder_source(source, perms, max_snr_idx):
         reorder_source: [B, C, K, L]
     """
     B, C, *_ = source.size()
-    # [B, C], permutation whose SI-SNR is max of each utterance
-    # for each utterance, reorder estimate source according this permutation
     max_snr_perm = torch.index_select(perms, dim=0, index=max_snr_idx)
     # maybe use torch.gather()/index_select()/scatter() to impl this?
     reorder_source = torch.zeros_like(source)
