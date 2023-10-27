@@ -8,7 +8,7 @@ import torch
 import threading
 
 from data import EvalDataLoader, EvalDataset
-from tasnet import TasNet
+from mynet import TasNet
 from concurrent.futures import ThreadPoolExecutor,as_completed,wait,ALL_COMPLETED
 
 parser = argparse.ArgumentParser('Separate speech using TasNet')
@@ -109,7 +109,7 @@ def remove_pad_and_flat(inputs, inputs_lengths):
         results: a list containing B items, each item is [C, T], T varies
     """
 
-    
+
     results = []
     dim = inputs.dim()
     if dim == 4:
