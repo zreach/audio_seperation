@@ -21,6 +21,41 @@ class TasNet(nn.Module):
         pred_source = self.decoder(mixture_e,pred_mask,norm_coef)
 
         return pred_source 
+    @classmethod
+    def load_model(cls, path):
+        # Load to CPU
+        package = torch.load(path, map_location=lambda storage, loc: storage)
+        model = cls.load_model_from_package(package)
+        return model
+
+    @classmethod
+    def load_model_from_package(cls, package):
+        model = cls(package['L'], package['N'],
+                    package['hidden_size'], package['num_layers'],
+                    bidirectional=package['bidirectional'],
+                    nspk=package['nspk'])
+        model.load_state_dict(package['state_dict'])
+        return model
+
+    @staticmethod
+    def serialize(model, optimizer, epoch, tr_loss=None, cv_loss=None):
+        package = {
+            # hyper-parameter
+            'L': model.L,
+            'N': model.N,
+            'hidden_size': model.hidden_size,
+            'num_layers': model.num_layers,
+            'bidirectional': model.bidirectional,
+            'nspk': model.nspk,
+            # state
+            'state_dict': model.state_dict(),
+            'optim_dict': optimizer.state_dict(),
+            'epoch': epoch
+        }
+        if tr_loss is not None:
+            package['tr_loss'] = tr_loss
+            package['cv_loss'] = cv_loss
+        return package
 class Encoder(nn.Module):
     def __init__(self,length,hidden,EPS) -> None:
         super().__init__()
@@ -31,7 +66,7 @@ class Encoder(nn.Module):
         B,K,L = mixture.size()
         norm_coef = torch.norm(mixture, p=2, dim=2, keepdim=True)  # B x K x 1
         norm_mixture = mixture/(norm_coef + self.EPS)
-        print(norm_mixture.shape)
+        # print(norm_mixture.shape)
         hidden = self.fc1(norm_mixture)
         hidden = F.relu(hidden)
         gate = self.fc2(norm_mixture)
@@ -52,7 +87,7 @@ class Separator(nn.Module):
         self.layer_norm = nn.LayerNorm(N)
         self.rnn = nn.LSTM(N, hidden_size, num_layers,
                            batch_first=True,
-                           bidirectional=bidirectional)
+                           bidirectional=bool(bidirectional))
         
         self.fc1 = nn.Linear(hidden_size * 2 if bidirectional else hidden_size, nspk * N)
 
@@ -65,6 +100,7 @@ class Separator(nn.Module):
         """
 
         B,K,N = mixture_e.size()
+        mixture_lengths = mixture_lengths.cpu()
         norm_mixture_e = self.layer_norm(mixture_e)
         packed_input = pack_padded_sequence(norm_mixture_e, mixture_lengths,
                                             batch_first=True)
@@ -72,11 +108,12 @@ class Separator(nn.Module):
         output, _ = pad_packed_sequence(packed_output,
                                         batch_first=True,
                                         total_length=K)
-        print(output.shape)
+        # print(output.shape)
         logits = self.fc1(output).view(B,K,self.nspk,N)
         est_mask = F.softmax(logits,dim=2)
 
         return est_mask
+    
     
 class Decoder(nn.Module):
     def __init__(self, N, L):

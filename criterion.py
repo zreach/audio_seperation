@@ -1,8 +1,4 @@
-# Created on 2018/12/12
-# Author: Kaituo XU
-
 from itertools import permutations
-
 import torch
 
 EPS = 1e-8
@@ -32,6 +28,7 @@ def cal_si_snr_with_pit(source, estimate_source, source_lengths):
     """
     assert source.size() == estimate_source.size()
     B, C, K, L = source.size()
+    
     # Step 1. Zero-mean norm
     num_samples = (L* source_lengths).view(-1, 1, 1, 1).float()  # [B, 1, 1, 1]
     mean_target = torch.sum(source, dim=[2, 3], keepdim=True) / num_samples
@@ -42,7 +39,7 @@ def cal_si_snr_with_pit(source, estimate_source, source_lengths):
     mask = get_mask(source, source_lengths)
     zero_mean_target *= mask
     zero_mean_estimate *= mask
-
+    
     # Step 2. SI-SNR with PIT
     # flat K, L to T (T = K * L)
     flat_target = zero_mean_target.view(B, C, -1)  # [B, C, T]
