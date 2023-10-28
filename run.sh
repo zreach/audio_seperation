@@ -32,6 +32,7 @@ optimizer=adam
 lr=1e-3
 momentum=0
 l2=1e-5
+thread_num=10
 
 tag="" 
 expdir=./checkpoints/${tag}/
@@ -92,11 +93,12 @@ fi
 if [ $stage -le 4 ]; then
   echo "Stage 4: Separate speech using TasNet"
   separate_dir=${expdir}/separate
-  python3.9 separate.py \
+  python3 separate.py \
     --model_path ${expdir}/final.pth.tar \
     --mix_json $dumpdir/tt/mix.json \
     --out_dir ${separate_dir} \
     --use_cuda $use_cuda \
     --sample_rate $sample_rate \
-    --batch_size 10
+    --batch_size 10 \
+    --thread_num $thread_num
 fi

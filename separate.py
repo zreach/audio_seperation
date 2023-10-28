@@ -77,9 +77,9 @@ def separate(args):
         threads.append(thread)
     max_threads = args.thread_nums
 
-    for i, thread in enumerate(threads):
+    for i, thread in enumerate(threads): # 每当达到最大线程数时，等待一个线程结束后再启动下一个线程
         thread.start()
-    # 每当达到最大线程数时，等待一个线程结束后再启动下一个线程
+         
         if (i + 1) % max_threads == 0:
             thread.join()
         
