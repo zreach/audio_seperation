@@ -6,9 +6,6 @@ import argparse
 import tqdm
 import logging
 
-# def cut(array,t):
-#     if(len(array)>t):
-#         return 
 def GenerateMixAudio(dataPath, state, useActive=True):
     if state.upper() == 'TRAIN':
         dataType = ['tr', 'cv']
@@ -68,10 +65,6 @@ def GenerateMixAudio(dataPath, state, useActive=True):
 
                 s1_16k, fs = sf.read(line[0])
                 s2_16k, _ = sf.read(line[2])
-                '''
-                 In original create_mixtures.m, activlev must be done, which I think it may degrade the performance since it nonlinearly filters the signal
-                 However, most of experiments did that parts because this it's essential to control variable for publishing papers.
-                '''
                 if useActive:
                     s1_16k, lev1 = activlev(s1_16k, fs, 'n')
                     s2_16k, lev2 = activlev(s2_16k, fs, 'n')
@@ -81,7 +74,7 @@ def GenerateMixAudio(dataPath, state, useActive=True):
 
                 s1_16k = weight_1 * s1_16k
                 s2_16k = weight_2 * s2_16k
-
+                
                 mix_16k_length = min(len(s1_16k), len(s2_16k))
                 s1_16k = s1_16k[:mix_16k_length]
                 s2_16k = s2_16k[:mix_16k_length]
