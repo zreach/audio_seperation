@@ -107,10 +107,6 @@ def cal_SISNRi(src_ref, src_est, mix):
         sdr0.append(cal_SISNR(src_ref[i],mix))
         all_sdri += sdr[i] - sdr0[i]
     avg_SDRi = all_sdri / C
-    # src_anchor = np.stack([mix, mix], axis=0)
-    # sdr, sir, sar, popt = bss_eval_sources(src_ref, src_est)
-    # sdr0, sir0, sar0, popt0 = bss_eval_sources(src_ref, src_anchor)
-    # avg_SDRi = ((sdr[0]-sdr0[0]) + (sdr[1]-sdr0[1])) / 2
     return avg_SDRi
 
 def cal_SISNR(ref_signal,ori_signal,EPS=1e-8):
