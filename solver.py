@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from criterion import cal_loss
 
 import os
@@ -22,13 +20,12 @@ class Solver(object):
         for epoch in range(self.args.epochs):
             #train
             train_loss = self.run_epoch(self.args)
-
+            start_time = time.time()
             print('-' * 85)
             print('Train Summary | End of Epoch {0} | Time {1:.2f}s | '
                   'Train Loss {2:.3f}'.format(
-                      epoch + 1,time.time(), train_loss))
+                      epoch + 1,time.time()-start_time, train_loss))
             print('-' * 85)
-
             file_path = os.path.join(
                     self.args.save_folder, 'epoch_%d.pth.tar' % (epoch + 1))
             torch.save(self.model.serialize(self.model, self.optimizer, epoch + 1,
@@ -42,15 +39,12 @@ class Solver(object):
                         # 删除文件
                     os.remove(old_file_path)
             val_loss = self.run_epoch(self.args,val=True)
-
+            start_time = time.time()
             print('-' * 85)
             print('Valid Summary | End of Epoch {0} | Time {1:.2f}s | '
                   'Valid Loss {2:.3f}'.format(
-                      epoch + 1, time.time() , val_loss))
+                      epoch + 1, time.time()-start_time , val_loss))
             print('-' * 85)
-
-            # self.train_loss[epoch] = train_loss
-            # self.val_loss[epoch] = val_loss
         file_path = os.path.join(
                     self.args.save_folder, 'final.pth.tar')
         torch.save(self.model.serialize(self.model, self.optimizer, epoch + 1,
