@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-# Created on 2018/12/14
-# Author: Kaituo XU
-
 import argparse
 
 import torch
@@ -43,6 +40,8 @@ parser.add_argument('--L', default=40, type=int,
                     help='Segment length (40=5ms at 8kHZ)')
 parser.add_argument('--N', default=500, type=int,
                     help='The number of basis signals')
+parser.add_argument('--e_type', default='conv', type=str,choices=['conv','fc'],
+                    help='The structure in encoder')
 parser.add_argument('--hidden_size', default=500, type=int,
                     help='Number of LSTM hidden units')
 parser.add_argument('--num_layers', default=4, type=int,
@@ -86,15 +85,7 @@ parser.add_argument('--continue_from', default='',
                     help='Continue from checkpoint model')
 parser.add_argument('--model_path', default='final.pth.tar',
                     help='Location to save best validation model')
-# logging
-parser.add_argument('--print_freq', default=10, type=int,
-                    help='Frequency of printing training infomation')
-parser.add_argument('--visdom', dest='visdom', type=int, default=0,
-                    help='Turn on visdom graphing')
-parser.add_argument('--visdom_epoch', dest='visdom_epoch', type=int, default=0,
-                    help='Turn on visdom graphing each epoch')
-parser.add_argument('--visdom_id', default='TasNet training',
-                    help='Identifier for visdom run')
+
 parser.add_argument('--percent', default=1,type=float,
                     help='How many percent of data will be used')
 parser.add_argument('--use_cuda', default=False,type=bool,
@@ -103,7 +94,7 @@ def main(args):
     # Construct Solver
     # data
     init_seed(42)
-    print(args.batch_size)
+    # print(args.batch_size)
     tr_dataset = AudioDataset(args.train_dir, args.batch_size,
                               sample_rate=args.sample_rate, L=args.L)
     cv_dataset = AudioDataset(args.valid_dir, args.batch_size,
@@ -119,7 +110,7 @@ def main(args):
     data = {'tr_loader': tr_loader, 'cv_loader': cv_loader}
     # model
     model = TasNet(args.L, args.N, args.hidden_size, args.num_layers,
-                   bidirectional=args.bidirectional, nspk=args.nspk)
+                   bidirectional=args.bidirectional, nspk=args.nspk,e_type =args.e_type)
     print(model)
     if args.use_cuda:
         model.cuda()

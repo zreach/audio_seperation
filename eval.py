@@ -78,6 +78,52 @@ def evaluate(args):
         print("Average SDR improvement: {0:.2f}".format(total_SDRi / total_cnt))
     print("Average SISNR improvement: {0:.2f}".format(total_SISNRi / total_cnt))
 
+# def cal_snr(signal, reference):
+#     # 计算信号的能量
+#     signal_energy = np.sum(signal ** 2)
+#     reference_energy = np.sum(reference ** 2)
+
+#     # 计算SDR
+#     sdr = 10 * np.log10(signal_energy / reference_energy)
+
+#     return sdr
+def cal_SISNRi(src_ref, src_est, mix):
+    """计算SISNRi
+
+    Args:
+        src_ref: numpy.ndarray, [C, T]
+        src_est: numpy.ndarray, [C, T], reordered by best PIT permutation
+        mix: numpy.ndarray, [T]
+    Returns:
+        average_SDRi
+    """
+    sdr0 = []
+    sdr = []
+
+    all_sdri = 0
+    C = src_ref.size(0)
+    for i in range(C):
+        sdr.append(cal_SISNR(src_ref[i],src_est[i]))
+        sdr0.append(cal_SISNR(src_ref[i],mix))
+        all_sdri += sdr[i] - sdr0[i]
+    avg_SDRi = all_sdri / C
+    # src_anchor = np.stack([mix, mix], axis=0)
+    # sdr, sir, sar, popt = bss_eval_sources(src_ref, src_est)
+    # sdr0, sir0, sar0, popt0 = bss_eval_sources(src_ref, src_anchor)
+    # avg_SDRi = ((sdr[0]-sdr0[0]) + (sdr[1]-sdr0[1])) / 2
+    return avg_SDRi
+
+def cal_SISNR(ref_signal,ori_signal,EPS=1e-8):
+    noise = ref_signal-ori_signal
+
+    ref_signal = ref_signal - np.mean(ref_signal)
+    ori_signal = ori_signal - np.mean(ori_signal)
+
+    noise_energy = np.sum(noise**2) + EPS
+    target_energy = np.sum(ori_signal**2) + EPS
+    signal_T = np.sum(ref_signal * ori_signal) * ori_signal / target_energy
+    T_energy = np.sum(signal_T**2) + EPS
+    return 10 * np.log10(T_energy/noise_energy)
 
 def cal_SDRi(src_ref, src_est, mix):
     """Calculate Source-to-Distortion Ratio improvement (SDRi).
@@ -96,44 +142,6 @@ def cal_SDRi(src_ref, src_est, mix):
     # print("SDRi1: {0:.2f}, SDRi2: {1:.2f}".format(sdr[0]-sdr0[0], sdr[1]-sdr0[1]))
     return avg_SDRi
 
-
-def cal_SISNRi(src_ref, src_est, mix):
-    """Calculate Scale-Invariant Source-to-Noise Ratio improvement (SI-SNRi)
-    Args:
-        src_ref: numpy.ndarray, [C, T]
-        src_est: numpy.ndarray, [C, T], reordered by best PIT permutation
-        mix: numpy.ndarray, [T]
-    Returns:
-        average_SISNRi
-    """
-    sisnr1 = cal_SISNR(src_ref[0], src_est[0])
-    sisnr2 = cal_SISNR(src_ref[1], src_est[1])
-    sisnr1b = cal_SISNR(src_ref[0], mix)
-    sisnr2b = cal_SISNR(src_ref[1], mix)
-    # print("SISNR base1 {0:.2f} SISNR base2 {1:.2f}, avg {2:.2f}".format(
-    #     sisnr1b, sisnr2b, (sisnr1b+sisnr2b)/2))
-    # print("SISNRi1: {0:.2f}, SISNRi2: {1:.2f}".format(sisnr1, sisnr2))
-    avg_SISNRi = ((sisnr1 - sisnr1b) + (sisnr2 - sisnr2b)) / 2
-    return avg_SISNRi
-
-
-def cal_SISNR(ref_sig, out_sig, eps=1e-8):
-    """Calcuate Scale-Invariant Source-to-Noise Ratio (SI-SNR)
-    Args:
-        ref_sig: numpy.ndarray, [T]
-        out_sig: numpy.ndarray, [T]
-    Returns:
-        SISNR
-    """
-    assert len(ref_sig) == len(out_sig)
-    ref_sig = ref_sig - np.mean(ref_sig)
-    out_sig = out_sig - np.mean(out_sig)
-    ref_energy = np.sum(ref_sig ** 2) + eps
-    proj = np.sum(ref_sig * out_sig) * ref_sig / ref_energy
-    noise = out_sig - proj
-    ratio = np.sum(proj ** 2) / (np.sum(noise ** 2) + eps)
-    sisnr = 10 * np.log(ratio + eps) / np.log(10.0)
-    return sisnr
 
             
 def remove_pad_and_flat(inputs, inputs_lengths):

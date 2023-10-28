@@ -1,7 +1,6 @@
 #!usr/bin/env python3.9
 
-
-data=./audios
+data=./result/audios
 stage=1
 # --
 expdir=./checkpoints
@@ -17,9 +16,10 @@ hidden_size=200
 num_layers=4
 bidirectional=1
 nspk=2
+e_type=conv
 # Training config
-use_cuda=0
-epochs=5
+use_cuda=1
+epochs=50
 shuffle=0
 half_lr=0
 early_stop=0
@@ -85,11 +85,7 @@ if [ $stage -le 2 ]; then
     --l2 $l2 \
     --save_folder ${expdir} \
     --checkpoint $checkpoint \
-    --continue_from "$continue_from" \
-    --print_freq ${print_freq} \
-    --visdom $visdom \
-    --visdom_epoch $visdom_epoch \
-    --visdom_id "$visdom_id"
+    --e_type $e_type
 fi
 
 

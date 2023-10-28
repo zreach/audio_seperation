@@ -59,8 +59,8 @@ class TasNet(nn.Module):
 class Encoder(nn.Module):
     def __init__(self,length,hidden,EPS) -> None:
         super().__init__()
-        self.fc1 = nn.Linear(length,hidden)
-        self.fc2 = nn.Linear(length,hidden)
+        self.fc1 = nn.Linear(length,hidden,bias=False)
+        self.fc2 = nn.Linear(length,hidden,bias=False)
         self.EPS = EPS
     def forward(self,mixture):
         B,K,L = mixture.size()
@@ -121,7 +121,7 @@ class Decoder(nn.Module):
         # hyper-parameter
         self.N, self.L = N, L
 
-        self.fc1 = nn.Linear(N,L)
+        self.fc1 = nn.Linear(N,L,bias=False)
     def forward(self,mixture_e,est_mask,norm_coef):
         """
         Args:

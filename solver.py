@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from criterion import cal_loss
 
 import os
