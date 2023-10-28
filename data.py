@@ -37,19 +37,6 @@ class AudioDataset(data.Dataset):
         self.infos = []
         for i in range(len(sorted_mix_infos)):
             self.infos.append([ sorted_mix_infos[i],sorted_s1_infos[i],sorted_s2_infos[i],sample_rate,L])
-        # generate minibach infomations
-        # minibatch = []
-        # start = 0
-        # while True:
-        #     end = min(len(sorted_mix_infos), start + batch_size)
-        #     minibatch.append([sorted_mix_infos[start:end],
-        #                       sorted_s1_infos[start:end],
-        #                       sorted_s2_infos[start:end],
-        #                       sample_rate, L])
-        #     if end == len(sorted_mix_infos):
-        #         break
-        #     start = end
-        # self.minibatch = minibatch
 
     def __getitem__(self, index):
         return self.infos[index]

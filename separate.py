@@ -77,28 +77,6 @@ def separate(args):
         
     for thread in threads:
         thread.join()
-        
-    # with torch.no_grad():
-    #     for (i, data) in enumerate(eval_loader):
-    #         # Get batch data
-    #         mixture, mix_lengths, filenames = data
-    #         if args.use_cuda:
-    #             mixture, mix_lengths = mixture.cuda(), mix_lengths.cuda()
-    #         # Forward
-    #         estimate_source = model(mixture, mix_lengths)  # [B, C, K, L]
-    #         # Remove padding and flat
-    #         flat_estimate = remove_pad_and_flat(estimate_source, mix_lengths)
-    #         mixture = remove_pad_and_flat(mixture, mix_lengths)
-    #         # Write result
-    #         for i, filename in enumerate(filenames):
-    #             filename = os.path.join(args.out_dir,
-    #                                     os.path.basename(filename).strip('.wav'))
-    #             write(mixture[i], filename + '.wav')
-    #             C = flat_estimate[i].shape[0]
-    #             for c in range(C):
-    #                 write(flat_estimate[i][c], filename + '_s{}.wav'.format(c+1))
-    #         def write(inputs, filename, sr=args.sample_rate):
-    #              sf.write(filename, inputs, sr)# norm=True)
 
 
 def remove_pad_and_flat(inputs, inputs_lengths):

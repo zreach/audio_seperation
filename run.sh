@@ -44,11 +44,15 @@ visdom_id="TasNet Training"
 # exp tag
 tag="" # tag for managing experiments.
 
+if [ $stage -le 0 ]; then
+  echo "Stage 0: Prepare mixed audios"
+  ./data_prepare/run.sh
+fi
 
 if [ $stage -le 1 ]; then
   echo "Stage 1: Generating json files including wav path and duration"
   [ ! -d $dumpdir ] && mkdir $dumpdir
-  python3.9 preprocess.py --in-dir $data --out-dir $dumpdir --sample-rate $sample_rate
+  python3 preprocess.py --in-dir $data --out-dir $dumpdir --sample-rate $sample_rate
 fi
 
 
@@ -61,7 +65,7 @@ fi
 if [ $stage -le 2 ]; then
   echo "Stage 2: Training"
   # ${cuda_cmd} --gpu ${ngpu} ${expdir}/train.log \
-    python3.9  train.py \
+    python3  train.py \
     --use_cuda $use_cuda \
     --train_dir $dumpdir/tr \
     --valid_dir $dumpdir/cv \
@@ -91,7 +95,7 @@ fi
 
 if [ $stage -le 3 ]; then
   echo "Stage 3: Evaluate separation performance"
-  python3.9 eval.py \
+  python3 eval.py \
     --model_path ${expdir}/final.pth.tar \
     --data_dir $dumpdir/tt \
     --cal_sdr 1 \
