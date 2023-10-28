@@ -1,6 +1,3 @@
-#Author: Yongyu Gao
-#Email : gaoyongyu@cloudwalk.cn
-
 import numpy as np
 import scipy.signal
 import scipy.sparse
@@ -251,12 +248,3 @@ def activlev(signal, fs, mode='n'):
             lev = sq[:nsp]
     return lev, af
 
-
-
-# def main():
-#     dataPath = '/home/yongyug/data/timit/TIMIT/TRAIN/DR1/MTRR0/SX108.WAV'
-#     data, fs = sf.read(dataPath)
-#
-#     activlev(data, fs,'n')
-#
-# main()
