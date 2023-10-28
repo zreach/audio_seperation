@@ -157,8 +157,6 @@ def _collate_fn_eval(batch):
     ilens = torch.from_numpy(ilens)
     return mixtures_pad, ilens, filenames
 
-
-# ------------------------------ utils ------------------------------------
 def load_mixtures_and_sources(batch):
     """
     Returns:
@@ -168,8 +166,6 @@ def load_mixtures_and_sources(batch):
     """
     mixtures, sources = [], []
 
-    # mix_infos, s1_infos, s2_infos, sample_rate, L = zip(*batch)
-    # for each utterance
     for mix_info, s1_info, s2_info,sample_rate,L in batch:
         mix_path = mix_info[0]
         s1_path = s1_info[0]

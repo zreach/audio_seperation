@@ -2,12 +2,12 @@
 
 data=./result/audios
 stage=1
-# --
-expdir=./checkpoints
+
+
 ngpu=0
 dumpdir=data
 
-# -- START TasNet Config
+# TasNet Config
 sample_rate=8000
 # Network config
 L=40
@@ -32,18 +32,9 @@ optimizer=adam
 lr=1e-3
 momentum=0
 l2=1e-5
-# save and visualize
-checkpoint=0
-continue_from=""
-print_freq=10
-visdom=0
-visdom_epoch=0
-visdom_id="TasNet Training"
-# -- END TasNet Config
 
-# exp tag
-tag="" # tag for managing experiments.
-
+tag="" 
+expdir=./checkpoints/${tag}/
 if [ $stage -le 0 ]; then
   echo "Stage 0: Prepare mixed audios"
   ./data_prepare/run.sh
@@ -56,15 +47,9 @@ if [ $stage -le 1 ]; then
 fi
 
 
-if [ -z ${tag} ]; then
-  log=log/train_r${sample_rate}_L${L}_N${N}_h${hidden_size}_l${num_layers}_bi${bidirectional}_C${nspk}_epoch${epochs}_half${half_lr}_norm${max_norm}_bs${batch_size}_worker${num_workers}_${optimizer}_lr${lr}_mmt${momentum}_l2${l2}
-else
-  log=log/train_${tag}
-fi
-
 if [ $stage -le 2 ]; then
   echo "Stage 2: Training"
-  # ${cuda_cmd} --gpu ${ngpu} ${expdir}/train.log \
+    
     python3  train.py \
     --use_cuda $use_cuda \
     --train_dir $dumpdir/tr \
@@ -88,7 +73,6 @@ if [ $stage -le 2 ]; then
     --momentum $momentum \
     --l2 $l2 \
     --save_folder ${expdir} \
-    --checkpoint $checkpoint \
     --e_type $e_type
 fi
 

@@ -32,15 +32,17 @@ parser.add_argument('--sample_rate', default=8000, type=int,
 parser.add_argument('--process_num', default=4, type=int,
                     help='Num of Process')
 
-def inference(model,data):
+def inference(args,model,data):
     mixture,mix_lengths,filenames = data
+    if(args.use_cuda):
+        mixture = mixture.cuda()
     with torch.no_grad():
         estimate_source = model(mixture, mix_lengths)
         flat_estimate = remove_pad_and_flat(estimate_source, mix_lengths)
         mixture = remove_pad_and_flat(mixture, mix_lengths)
         # Write result
         def write(inputs, filename, sr=args.sample_rate):
-                sf.write(filename, inputs, sr)
+            sf.write(filename, inputs, sr)
         for i, filename in enumerate(filenames):
             filename = os.path.join(args.out_dir,
                                     os.path.basename(filename).strip('.wav'))
@@ -48,7 +50,7 @@ def inference(model,data):
             C = flat_estimate[i].shape[0]
             for c in range(C):
                 write(flat_estimate[i][c], filename + '_s{}.wav'.format(c+1))
-        # norm=True)
+
 
 def separate(args):
     if args.mix_dir is None and args.mix_json is None:
@@ -71,21 +73,23 @@ def separate(args):
 
     threads = []
     for data in eval_loader:
-        thread = threading.Thread(target = inference,args=(model,data))
-        thread.start()
+        thread = threading.Thread(target = inference,args=(model,data,args))
         threads.append(thread)
+    max_threads = args.thread_nums
+
+    for i, thread in enumerate(threads):
+        thread.start()
+    # 每当达到最大线程数时，等待一个线程结束后再启动下一个线程
+        if (i + 1) % max_threads == 0:
+            thread.join()
         
-    for thread in threads:
-        thread.join()
-
-
 def remove_pad_and_flat(inputs, inputs_lengths):
     """
     Args:
         inputs: torch.Tensor, [B, C, K, L] or [B, K, L]
         inputs_lengths: torch.Tensor, [B]
     Returns:
-        results: a list containing B items, each item is [C, T], T varies
+        results: a list containing B items, each item is [C, T]
     """
 
 
