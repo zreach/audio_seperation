@@ -1,6 +1,0 @@
-eps的作用主要是防止非法运算
-全连接收敛会慢一些 效果也会差一些（？）
-最好的结果: 
-Average SDR improvement: 8.48
-Average SISNR improvement: 8.24
-信号编解码时的偏置都是0
