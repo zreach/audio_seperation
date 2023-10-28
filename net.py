@@ -86,7 +86,7 @@ class Separator(nn.Module):
         
         self.layer_norm = nn.LayerNorm(N)
         self.rnn = nn.LSTM(N, hidden_size, num_layers,
-                           batch_first=True,
+                           batch_first=True,dropuout=0.4,
                            bidirectional=bool(bidirectional))
         
         self.fc1 = nn.Linear(hidden_size * 2 if bidirectional else hidden_size, nspk * N)
@@ -98,7 +98,7 @@ class Separator(nn.Module):
         Returns:
             est_mask: [B, K, nspk, N]
         """
-
+        
         B,K,N = mixture_e.size()
         mixture_lengths = mixture_lengths.cpu()
         norm_mixture_e = self.layer_norm(mixture_e)
@@ -137,29 +137,4 @@ class Decoder(nn.Module):
         est_source = est_source.permute((0, 2, 1, 3)).contiguous() # B x nspk x K x L
         return est_source
 
-# if __name__ == "__main__":
-#     torch.manual_seed(123)
-#     B, K, L, N, C = 2, 3, 4, 3, 2
-#     hidden_size, num_layers = 4, 2
-#     mixture = torch.randn((B, K, L))
-#     print(mixture.shape)
-#     lengths = torch.LongTensor([K for i in range(B)])
-#     # test Encoder
-#     encoder = Encoder(L, N,1e-8)
-#     mixture_e, norm_coef = encoder(mixture)
-#     # test Separator
-#     separator = Separator(N, hidden_size, num_layers)
-#     est_mask = separator(mixture_e, lengths)
-#     print('est_mask', est_mask)
-
-#     # test Decoder
-#     decoder = Decoder(N, L)
-#     est_mask = torch.randint(2, (B, K, C, N))
-#     est_source = decoder(mixture_e, est_mask, norm_coef)
-#     print('est_source', est_source)
-
-#     # test TasNet
-#     tasnet = TasNet(L, N, hidden_size, num_layers)
-#     est_source = tasnet(mixture, lengths)
-#     print('est_source', est_source)
     
