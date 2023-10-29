@@ -88,7 +88,7 @@ parser.add_argument('--model_path', default='final.pth.tar',
 
 parser.add_argument('--percent', default=1,type=float,
                     help='How many percent of data will be used')
-parser.add_argument('--use_cuda', default=False,type=bool,
+parser.add_argument('--use_cuda', default=0,type=int,
                     help='use cuda or not')
 def main(args):
     # Construct Solver
@@ -112,7 +112,7 @@ def main(args):
     model = TasNet(args.L, args.N, args.hidden_size, args.num_layers,
                    bidirectional=args.bidirectional, nspk=args.nspk,e_type =args.e_type)
     print(model)
-    print(args.use_cuda)
+    # print(args.use_cuda)
     if args.use_cuda:
         model.cuda()
     # optimizer
@@ -136,5 +136,5 @@ def main(args):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    print(args.use_cuda)
+    print(args)
     main(args)
