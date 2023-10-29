@@ -29,13 +29,12 @@ def CreateFiles(input_dir, output_dir, nums_file, state):
 
                     pass
                 else:
-                    print(root)
+                    # print(root)
                     if('/A' in root):
                         a_wavList.append(wavFile)
                     elif('/B' in root):
                         b_wavList.append(wavFile)
-                # print('false',end='\r')
-                # print('false')
+
     random.shuffle(a_wavList)
     random.shuffle(b_wavList)
     print(len(a_wavList))

@@ -112,6 +112,7 @@ def main(args):
     model = TasNet(args.L, args.N, args.hidden_size, args.num_layers,
                    bidirectional=args.bidirectional, nspk=args.nspk,e_type =args.e_type)
     print(model)
+    print(args.use_cuda)
     if args.use_cuda:
         model.cuda()
     # optimizer
@@ -135,5 +136,5 @@ def main(args):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    print(args)
+    print(args.use_cuda)
     main(args)

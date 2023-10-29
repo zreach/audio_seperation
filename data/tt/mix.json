@@ -1,1 +1,14 @@
-[]
+[
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tt/mix/A_19-198-0001._0.9627_B_32-21631-0002._-0.9627.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tt/mix/A_19-198-0001._0.2893_B_32-21631-0007._-0.2893.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tt/mix/A_32-21631-0006._0.4491_B_32-21631-0000._-0.4491.wav",
+        24000
+    ]
+]

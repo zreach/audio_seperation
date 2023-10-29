@@ -1,34 +1,98 @@
 [
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._0.4398_B_32-21631-0008._-0.4398.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0006._1.2821_B_32-21631-0002._-1.2821.wav",
         24000
     ],
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._2.317_B_32-21631-0000._-2.317.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0008._1.9823_B_32-21631-0000._-1.9823.wav",
         24000
     ],
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0006._1.1545_B_32-21631-0001._-1.1545.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0002._0.7407_B_32-21631-0008._-0.7407.wav",
         24000
     ],
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0001._0.4074_B_32-21631-0002._-0.4074.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0008._0.8911_B_32-21631-0002._-0.8911.wav",
         24000
     ],
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._1.4833_B_32-21631-0002._-1.4833.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0006._0.3191_B_32-21631-0001._-0.3191.wav",
         24000
     ],
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._1.1773_B_32-21631-0006._-1.1773.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._0.9789_B_32-21631-0006._-0.9789.wav",
         24000
     ],
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0008._0.7695_B_32-21631-0007._-0.7695.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0001._1.0795_B_32-21631-0008._-1.0795.wav",
         24000
     ],
     [
-        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0006._1.8125_B_32-21631-0006._-1.8125.wav",
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._2.2613_B_32-21631-0002._-2.2613.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0002._1.1034_B_32-21631-0001._-1.1034.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0006._0.8513_B_32-21631-0006._-0.8513.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0001._2.355_B_32-21631-0006._-2.355.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0002._1.8141_B_32-21631-0007._-1.8141.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0001._0.8161_B_32-21631-0001._-0.8161.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0002._1.8664_B_32-21631-0002._-1.8664.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0002._2.2153_B_32-21631-0000._-2.2153.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._1.8083_B_32-21631-0008._-1.8083.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._0.995_B_32-21631-0000._-0.995.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0008._2.3369_B_32-21631-0006._-2.3369.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0002._2.1689_B_32-21631-0006._-2.1689.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0006._1.1183_B_32-21631-0008._-1.1183.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0007._0.6404_B_32-21631-0001._-0.6404.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_19-198-0001._1.6738_B_32-21631-0000._-1.6738.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0008._1.7358_B_32-21631-0008._-1.7358.wav",
+        24000
+    ],
+    [
+        "/Users/pingguosb/Desktop/python/AI/audio_seperation/result/audio/tr/s1/A_32-21631-0006._0.2607_B_32-21631-0007._-0.2607.wav",
         24000
     ]
 ]

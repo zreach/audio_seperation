@@ -6,7 +6,7 @@ SRC_ROOT=$MAIN_ROOT/data_prepare
 export PATH=$SRC_ROOT/:$PATH
 
 data=./result/audio
-stage=0
+stage=2
 
 
 ngpu=0
@@ -59,7 +59,7 @@ fi
 
 if [ $stage -le 2 ]; then
   echo "Stage 2: Training"
-    
+
     python  train.py \
     --use_cuda $use_cuda \
     --train_dir $dumpdir/tr \
