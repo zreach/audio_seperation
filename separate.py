@@ -11,6 +11,8 @@ from data import EvalDataLoader, EvalDataset
 from net import TasNet
 from concurrent.futures import ThreadPoolExecutor,as_completed,wait,ALL_COMPLETED
 
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
 parser = argparse.ArgumentParser('Separate speech using TasNet')
 parser.add_argument('--model_path', type=str, required=True,
                     help='Path to model file created by training')
@@ -106,6 +108,7 @@ def remove_pad_and_flat(inputs, inputs_lengths):
 
 
 if __name__ == '__main__':
+    os.environ['KMP_DUPLICATE_LIB_OK']='True'
     args = parser.parse_args()
     print(args)
     separate(args)

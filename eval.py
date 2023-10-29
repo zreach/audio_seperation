@@ -10,7 +10,6 @@ from data import AudioDataLoader, AudioDataset
 from criterion import cal_loss
 from net import TasNet
 
-
 parser = argparse.ArgumentParser('Evaluate separation performance using TasNet')
 parser.add_argument('--model_path', type=str, required=True,
                     help='Path to model file created by training')
@@ -163,6 +162,7 @@ def remove_pad_and_flat(inputs, inputs_lengths):
 
 
 if __name__ == '__main__':
+    os.environ['KMP_DUPLICATE_LIB_OK']='True'
     args = parser.parse_args()
     print(args)
     evaluate(args)

@@ -6,7 +6,7 @@ SRC_ROOT=$MAIN_ROOT/data_prepare
 export PATH=$SRC_ROOT/:$PATH
 
 data=./result/audio
-stage=3
+stage=0
 
 
 ngpu=0
@@ -23,7 +23,7 @@ bidirectional=1
 nspk=2
 e_type=conv
 # Training config
-use_cuda=1
+use_cuda=0
 epochs=50
 shuffle=0
 half_lr=0
@@ -40,7 +40,7 @@ l2=1e-5
 thread_num=5
 
 
-tag="" 
+tag="final_2" 
 expdir=./checkpoints/${tag}/
 
 cd ./data_prepare
