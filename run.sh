@@ -1,7 +1,12 @@
-#!usr/bin/env python3.9
+#!/bin/bash
+#!/usr/bin/python
 
-data=./result/audios
-stage=1
+MAIN_ROOT=$PWD/..
+SRC_ROOT=$MAIN_ROOT/data_prepare
+export PATH=$SRC_ROOT/:$PATH
+
+data=./result/audio
+stage=3
 
 
 ngpu=0
@@ -26,32 +31,36 @@ early_stop=0
 max_norm=5
 # minibatch
 batch_size=10
-num_workers=2
+num_workers=1
 # optimizer
 optimizer=adam
 lr=1e-3
 momentum=0
 l2=1e-5
-thread_num=10
+thread_num=5
+
 
 tag="" 
 expdir=./checkpoints/${tag}/
+
+cd ./data_prepare
 if [ $stage -le 0 ]; then
   echo "Stage 0: Prepare mixed audios"
-  ./data_prepare/run.sh
+  bash run.sh
 fi
+cd ..
 
 if [ $stage -le 1 ]; then
   echo "Stage 1: Generating json files including wav path and duration"
   [ ! -d $dumpdir ] && mkdir $dumpdir
-  python3 preprocess.py --in-dir $data --out-dir $dumpdir --sample-rate $sample_rate
+  python preprocess.py --in-dir $data --out-dir $dumpdir --sample-rate $sample_rate
 fi
 
 
 if [ $stage -le 2 ]; then
   echo "Stage 2: Training"
     
-    python3  train.py \
+    python  train.py \
     --use_cuda $use_cuda \
     --train_dir $dumpdir/tr \
     --valid_dir $dumpdir/cv \
@@ -80,7 +89,7 @@ fi
 
 if [ $stage -le 3 ]; then
   echo "Stage 3: Evaluate separation performance"
-  python3 eval.py \
+  python eval.py \
     --model_path ${expdir}/final.pth.tar \
     --data_dir $dumpdir/tt \
     --cal_sdr 1 \
@@ -93,7 +102,7 @@ fi
 if [ $stage -le 4 ]; then
   echo "Stage 4: Separate speech using TasNet"
   separate_dir=${expdir}/separate
-  python3 separate.py \
+  python separate.py \
     --model_path ${expdir}/final.pth.tar \
     --mix_json $dumpdir/tt/mix.json \
     --out_dir ${separate_dir} \

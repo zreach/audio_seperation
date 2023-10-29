@@ -68,7 +68,7 @@ def separate(args):
     eval_dataset = EvalDataset(args.mix_dir, args.mix_json,
                                batch_size=args.batch_size,
                                sample_rate=args.sample_rate, L=model.L)
-    eval_loader =  EvalDataLoader(eval_dataset, batch_size=1,num_workers=args.process_num)
+    eval_loader =  EvalDataLoader(eval_dataset, batch_size=1,num_workers=1)
     os.makedirs(args.out_dir, exist_ok=True)
 
     threads = []

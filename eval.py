@@ -99,9 +99,11 @@ def cal_SISNRi(src_ref, src_est, mix):
     """
     sdr0 = []
     sdr = []
-
+    # print(src_ref)
     all_sdri = 0
-    C = src_ref.size(0)
+    # print(src_ref.size())
+    C = 2 
+
     for i in range(C):
         sdr.append(cal_SISNR(src_ref[i],src_est[i]))
         sdr0.append(cal_SISNR(src_ref[i],mix))

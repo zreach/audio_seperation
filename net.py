@@ -6,15 +6,15 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 class TasNet(nn.Module):
     def __init__(self, L, N, hidden_size, num_layers,EPS=1e-8,
-            bidirectional=True, nspk=2):
+            bidirectional=True, nspk=2,fc=0,e_type='conv'):
         super(TasNet, self).__init__()
         self.L, self.N, self.hidden_size, self.num_layers,self.bidirectional,self.nspk = L, N, hidden_size, num_layers,bidirectional, nspk
         self.EPS = EPS
-        self.encoder = Encoder(L, N,EPS)
+        self.encoder = Encoder(L, N,EPS,e_type)
         self.separator = Separator(N, hidden_size, num_layers,
                                    bidirectional=bidirectional, nspk=nspk)
         self.decoder = Decoder(N, L)
-
+        self.fc = fc
     def forward(self,mixture,mixture_lengths):
         mixture_e,norm_coef = self.encoder(mixture)
         pred_mask = self.separator(mixture_e,mixture_lengths)
@@ -57,22 +57,37 @@ class TasNet(nn.Module):
             package['cv_loss'] = cv_loss
         return package
 class Encoder(nn.Module):
-    def __init__(self,length,hidden,EPS) -> None:
+    def __init__(self,length,signal_size,EPS,e_type) -> None:
         super().__init__()
-        self.fc1 = nn.Linear(length,hidden,bias=False)
-        self.fc2 = nn.Linear(length,hidden,bias=False)
+        self.e_type = e_type
+        self.signal_size = signal_size
+        if(e_type == 'fc'):
+            self.fc1 = nn.Linear(length,signal_size,bias=False)
+            self.fc2 = nn.Linear(length,signal_size,bias=False)
+        elif (e_type=='conv'):
+            self.conv1d_U = nn.Conv1d(length, signal_size, kernel_size=1, stride=1, bias=False)
+            self.conv1d_V = nn.Conv1d(length, signal_size, kernel_size=1, stride=1, bias=False)
+        else:
+            print('ERROR')
+            return 
         self.EPS = EPS
     def forward(self,mixture):
         B,K,L = mixture.size()
         norm_coef = torch.norm(mixture, p=2, dim=2, keepdim=True)  # B x K x 1
         norm_mixture = mixture/(norm_coef + self.EPS)
         # print(norm_mixture.shape)
-        hidden = self.fc1(norm_mixture)
-        hidden = F.relu(hidden)
-        gate = self.fc2(norm_mixture)
-        gate = torch.sigmoid(gate)
-        
-        y = hidden * gate
+        if self.e_type == 'fc':
+            hidden = self.fc1(norm_mixture)
+            hidden = F.relu(hidden)
+            gate = self.fc2(norm_mixture)
+            gate = torch.sigmoid(gate)
+            y = hidden * gate
+        else:
+            norm_mixture = torch.unsqueeze(norm_mixture.view(-1, L), 2)  # B*K x L x 1
+            hidden = F.relu(self.conv1d_U(norm_mixture))         # B*K x N x 1
+            gate = torch.sigmoid(self.conv1d_V(norm_mixture))  # B*K x N x 1
+            y = hidden * gate  # B*K x N x 1
+            y = y.view(B, K, self.signal_size) # B x K x N
         return y,norm_coef
 class Separator(nn.Module):
     def __init__(self, N, hidden_size, num_layers, bidirectional=True, nspk=2):
@@ -86,7 +101,7 @@ class Separator(nn.Module):
         
         self.layer_norm = nn.LayerNorm(N)
         self.rnn = nn.LSTM(N, hidden_size, num_layers,
-                           batch_first=True,dropuout=0.4,
+                           batch_first=True,
                            bidirectional=bool(bidirectional))
         
         self.fc1 = nn.Linear(hidden_size * 2 if bidirectional else hidden_size, nspk * N)
@@ -98,7 +113,7 @@ class Separator(nn.Module):
         Returns:
             est_mask: [B, K, nspk, N]
         """
-        
+
         B,K,N = mixture_e.size()
         mixture_lengths = mixture_lengths.cpu()
         norm_mixture_e = self.layer_norm(mixture_e)
@@ -121,7 +136,7 @@ class Decoder(nn.Module):
         # hyper-parameter
         self.N, self.L = N, L
 
-        self.fc1 = nn.Linear(N,L,bias=False)
+        self.fc1 = nn.Linear(N,L)
     def forward(self,mixture_e,est_mask,norm_coef):
         """
         Args:
@@ -136,5 +151,3 @@ class Decoder(nn.Module):
         norm_coef = torch.unsqueeze(norm_coef, 2) #恢复原始大小
         est_source = est_source.permute((0, 2, 1, 3)).contiguous() # B x nspk x K x L
         return est_source
-
-    
