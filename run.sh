@@ -42,6 +42,7 @@ thread_num=5
 
 tag="final_2" 
 expdir=./checkpoints/${tag}/
+[ ! -d $expdir ] && mkdir $expdir
 
 cd ./data_prepare
 if [ $stage -le 0 ]; then
