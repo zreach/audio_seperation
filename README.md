@@ -106,4 +106,4 @@ Yi Luo,Nima Mesgarani, [TasNet: time-domain audio separation network for real-ti
 
 ## Authors
 
-* **Yizhi Zhou** - *Initial work* - [zreach](
+* **Yizhi Zhou** - *Initial work* - [zreach](https://github.com/zreach)
